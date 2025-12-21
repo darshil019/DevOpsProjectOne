@@ -12,9 +12,6 @@ function App() {
   const [error, setError] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  let darshil = "hello";
-  let h = "hey";
-
   // Fetch tasks on component mount
   useEffect(() => {
     fetchTasks();
