@@ -67,7 +67,7 @@ jobs:
         env:
           EC2_KEY: ${{ secrets.EC2_KEY }}
 
-      - name: Deploy on EC2 (git pull + docker compose)
+      - name: Deploy on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -75,15 +75,17 @@ jobs:
         run: |
           ssh -i ec2_key.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
           set -e
+          echo "APP DIR = ${EC2_APP_DIR}"
+          pwd
+          ls -a
           cd "${EC2_APP_DIR}"
+          pwd
+          ls -a
 
           git fetch --all
           git reset --hard origin/main
 
           docker compose up -d --build
-
-          docker image prune -f
-          docker compose ps
           EOF
 
     
