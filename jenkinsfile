@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'docker'
+  }
 
   environment {
     FRONTEND_IMAGE = "mern-frontend:jenkins"
@@ -9,20 +11,21 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout Code') {
       steps {
-        git url: 'https://github.com/darshil019/DevOpsProjectOne.git', branch: 'main'
+        checkout scm
       }
     }
 
     stage('Prepare .env') {
       steps {
         sh '''
-            mkdir -p server
-            cat > server/.env <<EOF
-            PORT=$PORT
-            MONGO_URI=$MONGO_URI
-            EOF
+          mkdir -p server
+          cat > server/.env <<EOF
+PORT=${PORT}
+MONGO_URI=${MONGO_URI}
+EOF
         '''
       }
     }
@@ -31,10 +34,11 @@ pipeline {
       steps {
         sh '''
           echo "Building backend image..."
-          docker build -t $BACKEND_IMAGE ./server
+          docker build -t ${BACKEND_IMAGE} ./server
 
           echo "Building frontend image..."
-          docker build -t $FRONTEND_IMAGE ./client --build-arg VITE_API_URL=http://localhost:5001/api
+          docker build -t ${FRONTEND_IMAGE} ./client \
+            --build-arg VITE_API_URL=http://localhost:5001/api
         '''
       }
     }
